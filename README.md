@@ -1,20 +1,26 @@
 # maj-api
 
-## 1 - Installation
-
+## Installation
 ```bash
 $ npm install
 ```
 
-## 2 - Before you start
+## Before you start
 At the root of the project, execute the following commands:
-
 ```bash
 cp ./api/.env.example ./api/.env
 ```
 
-## 3 - Running the app
+## Migration
+```bash
+# run migration
+npm run migration:run
 
+# generate migration with a migration name
+npm run migration:generate -- <migrationName>
+```
+
+## Running the app
 ```bash
 npm run start
 ```
