@@ -13,6 +13,10 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "migration:run": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:run --config core/orm/orm.cli.config.ts",
+    "migration:revert": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:revert --config core/orm/orm.cli.config.ts",
+    "migration:create": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:create --config core/orm/orm.cli.config.ts -n",
+    "migration:generate": "ts-node --transpile-only ./node_modules/typeorm/cli.js migration:generate --config core/orm/orm.cli.config.ts -n",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
@@ -35,7 +39,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.4.0",
-    "typeorm": "^0.3.6"
+    "typeorm": "^0.2.45"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
