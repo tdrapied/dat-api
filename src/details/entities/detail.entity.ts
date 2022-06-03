@@ -1,4 +1,6 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { Location } from '../../locations/entities/location.entity';
+import { ApiHideProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Detail {
@@ -13,6 +15,12 @@ export class Detail {
     type: 'float',
   })
   value: number;
+
+  @ApiHideProperty()
+  @ManyToOne(() => Location, {
+    nullable: false,
+  })
+  location: Location;
 
   @Column({
     type: 'timestamptz',

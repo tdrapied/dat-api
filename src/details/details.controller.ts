@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { DetailsService } from './details.service';
 import { CreateDetailDto } from './dto/create-detail.dto';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
@@ -7,7 +7,7 @@ import { Detail } from './entities/detail.entity';
 @ApiTags('details')
 @Controller('details')
 export class DetailsController {
-  constructor(private readonly detailsService: DetailsService) {}
+  constructor(private detailsService: DetailsService) {}
 
   @Post()
   create(@Body() createDetailDto: CreateDetailDto): Promise<Detail> {
@@ -18,5 +18,10 @@ export class DetailsController {
   @Get('last')
   last(): Promise<Detail> {
     return this.detailsService.last();
+  }
+
+  @Get('locations/:locationId')
+  findByLocation(@Param('locationId') locationId: string): Promise<Detail[]> {
+    return this.detailsService.findDetails(locationId);
   }
 }

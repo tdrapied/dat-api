@@ -18,13 +18,19 @@ export class DetailsService {
     return this.detailRepository.save(detail);
   }
 
-  last(): Promise<Detail> {
-    const detail = this.detailRepository.findOne({
+  async last(): Promise<Detail> {
+    const detail = await this.detailRepository.findOne({
       order: { createdAt: 'DESC' },
     });
     if (!detail) {
       throw new NotFoundException();
     }
     return detail;
+  }
+
+  findDetails(locationId: string): Promise<Detail[]> {
+    return this.detailRepository.find({
+      where: { location: { id: locationId } },
+    });
   }
 }
