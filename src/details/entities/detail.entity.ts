@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Location } from '../../locations/entities/location.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Detail {
@@ -17,6 +18,7 @@ export class Detail {
   value: number;
 
   @ApiHideProperty()
+  @Exclude()
   @ManyToOne(() => Location, {
     nullable: false,
   })
