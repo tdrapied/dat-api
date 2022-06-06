@@ -8,7 +8,7 @@ $ npm install
 ## Before you start
 At the root of the project, execute the following commands:
 ```bash
-cp ./api/.env.example ./api/.env
+cp .env.example .env
 ```
 
 ## Migration
