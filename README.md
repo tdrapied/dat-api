@@ -24,3 +24,5 @@ npm run migration:generate -- <migrationName>
 ```bash
 npm run start
 ```
+
+API: http://localhost:3000
