@@ -1,4 +1,4 @@
-# maj-api
+# dat-api
 
 ## Installation
 ```bash

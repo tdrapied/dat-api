@@ -18,12 +18,16 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  const config = new DocumentBuilder()
-    .setTitle(process.env.npm_package_name)
-    .setVersion(process.env.npm_package_version)
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/', app, document);
+  if (process.env.APP_ENV !== 'production') {
+    const config = new DocumentBuilder()
+      .setTitle(process.env.npm_package_name)
+      .setVersion(process.env.npm_package_version)
+      .addTag('locations')
+      .addTag('humidities')
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('/', app, document);
+  }
 
   await app.listen(3000);
 }
