@@ -1,8 +1,16 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { HumiditiesService } from './humidities.service';
 import { CreateHumidityDto } from './dto/create-humidity.dto';
 import {
   ApiBadRequestResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -10,15 +18,19 @@ import {
 import { Humidity } from './entities/humidity.entity';
 
 @ApiTags('humidities')
-@Controller('humidities')
+@Controller('location/:locationId/humidities')
 export class HumiditiesController {
   constructor(private humiditiesService: HumiditiesService) {}
 
   @ApiOperation({ summary: 'Create a new humidity' })
   @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiNotFoundResponse({ description: 'Location not found' })
   @Post()
-  create(@Body() createHumidityDto: CreateHumidityDto): Promise<Humidity> {
-    return this.humiditiesService.create(createHumidityDto);
+  create(
+    @Param('locationId', ParseUUIDPipe) locationId: string,
+    @Body() createHumidityDto: CreateHumidityDto,
+  ): Promise<Humidity> {
+    return this.humiditiesService.create(locationId, createHumidityDto);
   }
 
   @ApiOperation({ summary: 'Get last humidity' })
@@ -26,8 +38,11 @@ export class HumiditiesController {
     description: 'Get last humidity (or `null` if no humidities)',
     type: Humidity,
   })
+  @ApiNotFoundResponse({ description: 'Location not found' })
   @Get('last')
-  last(): Promise<Humidity> {
-    return this.humiditiesService.last();
+  last(
+    @Param('locationId', ParseUUIDPipe) locationId: string,
+  ): Promise<Humidity> {
+    return this.humiditiesService.last(locationId);
   }
 }

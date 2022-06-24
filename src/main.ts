@@ -22,6 +22,8 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle(process.env.npm_package_name)
       .setVersion(process.env.npm_package_version)
+      .addTag('locations')
+      .addTag('humidities')
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/', app, document);

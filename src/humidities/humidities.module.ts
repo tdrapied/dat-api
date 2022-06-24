@@ -3,10 +3,10 @@ import { HumiditiesService } from './humidities.service';
 import { HumiditiesController } from './humidities.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Humidity } from './entities/humidity.entity';
-import { Location } from '../locations/entities/location.entity';
+import { LocationsModule } from '../locations/locations.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Humidity, Location])],
+  imports: [TypeOrmModule.forFeature([Humidity]), LocationsModule],
   controllers: [HumiditiesController],
   providers: [HumiditiesService],
 })

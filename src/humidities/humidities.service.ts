@@ -1,26 +1,23 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateHumidityDto } from './dto/create-humidity.dto';
 import { Humidity } from './entities/humidity.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Location } from '../locations/entities/location.entity';
+import { LocationsService } from '../locations/locations.service';
 
 @Injectable()
 export class HumiditiesService {
   constructor(
     @InjectRepository(Humidity)
     private humidityRepository: Repository<Humidity>,
-    @InjectRepository(Location)
-    private locationRepository: Repository<Location>,
+    private locationService: LocationsService,
   ) {}
 
-  async create(createHumidityDto: CreateHumidityDto): Promise<Humidity> {
-    const location = await this.locationRepository.findOne({
-      where: { id: createHumidityDto.locationId },
-    });
-    if (!location) {
-      throw new BadRequestException('Location not exists');
-    }
+  async create(
+    locationId: string,
+    createHumidityDto: CreateHumidityDto,
+  ): Promise<Humidity> {
+    const location = await this.locationService.getLocationIfExists(locationId);
 
     const detail = new Humidity();
     detail.value = createHumidityDto.value;
@@ -29,8 +26,11 @@ export class HumiditiesService {
     return this.humidityRepository.save(detail);
   }
 
-  last(): Promise<Humidity> {
+  async last(locationId: string): Promise<Humidity> {
+    const location = await this.locationService.getLocationIfExists(locationId);
+
     return this.humidityRepository.findOne({
+      where: { location },
       order: { createdAt: 'DESC' },
     });
   }
