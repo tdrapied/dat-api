@@ -4,7 +4,7 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 
 @Entity()
-export class Detail {
+export class Humidity {
   @Column({
     type: 'uuid',
     primary: true,

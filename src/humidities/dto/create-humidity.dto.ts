@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 
-export class CreateDetailDto {
+export class CreateHumidityDto {
   @IsNotEmpty()
   @IsUUID()
   locationId: string;
