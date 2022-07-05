@@ -1,7 +1,8 @@
+import { DataSource } from 'typeorm';
 import { join } from 'path';
 import 'dotenv/config';
 
-export default {
+export default new DataSource({
   type: 'postgres',
   host: process.env.POSTGRES_HOST,
   port: +process.env.POSTGRES_PORT,
@@ -10,5 +11,4 @@ export default {
   database: process.env.POSTGRES_DB,
   entities: [join(__dirname, '../../src/**/*.entity{.ts,.js}')],
   migrations: [join(__dirname, '../../src/migrations/*{.ts,.js}')],
-  cli: { migrationsDir: 'src/migrations' },
-};
+});

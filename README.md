@@ -17,10 +17,12 @@ cp .env.example .env
 npm run migration:run
 
 # generate migration with a migration name
-npm run migration:generate -- <migrationName>
+npm run migration:generate -- <path/name>
 ```
 
 ## Running the app
 ```bash
 npm run start
 ```
+
+API: http://localhost:3000
