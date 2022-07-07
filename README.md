@@ -26,3 +26,9 @@ npm run start
 ```
 
 API: http://localhost:3000
+
+## Testing
+```bash
+# Run the test with fake data
+npm run test
+```
