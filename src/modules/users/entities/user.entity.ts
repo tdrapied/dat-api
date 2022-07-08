@@ -54,7 +54,9 @@ export class User {
 
   @Expose()
   @ManyToMany(() => Location)
-  @JoinTable()
+  @JoinTable({
+    name: 'user_locations',
+  })
   locations: Location[];
 
   @Column({
