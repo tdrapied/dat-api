@@ -22,6 +22,9 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle(process.env.npm_package_name)
       .setVersion(process.env.npm_package_version)
+      .addBearerAuth()
+      .addTag('auth')
+      .addTag('users')
       .addTag('locations')
       .addTag('humidities')
       .build();
