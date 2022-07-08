@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Column, Entity, ManyToMany, JoinTable } from 'typeorm';
+import { Exclude, Expose } from 'class-transformer';
 import { ApiHideProperty } from '@nestjs/swagger';
+import { Location } from '../../locations/entities/location.entity';
 
 export enum UserRole {
   SUPER_ADMIN = 'SUPER_ADMIN',
@@ -50,6 +51,11 @@ export class User {
   })
   // If user email is verified, then it's true
   isEnabled = false;
+
+  @Expose()
+  @ManyToMany(() => Location)
+  @JoinTable()
+  locations: Location[];
 
   @Column({
     type: 'timestamptz',

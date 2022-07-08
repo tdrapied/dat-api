@@ -6,7 +6,7 @@ import { HumiditiesModule } from './modules/humidities/humidities.module';
 import { LocationsModule } from './modules/locations/locations.module';
 import { UsersModule } from './modules/users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { MailerConfig } from 'core/mailer/mailer.config';
+import { MailerConfig } from '../core/mailer/mailer.config';
 
 @Module({
   imports: [
