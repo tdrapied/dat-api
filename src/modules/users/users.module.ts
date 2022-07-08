@@ -12,5 +12,6 @@ import { Location } from '../locations/entities/location.entity';
   imports: [TypeOrmModule.forFeature([User, ValidationCode, Location])],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository, MailerUtil],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}
