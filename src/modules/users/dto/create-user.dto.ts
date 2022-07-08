@@ -4,9 +4,10 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsString, IsUUID,
-  Length
-} from "class-validator";
+  IsString,
+  IsUUID,
+  Length,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()

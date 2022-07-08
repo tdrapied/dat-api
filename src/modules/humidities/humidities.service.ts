@@ -19,11 +19,11 @@ export class HumiditiesService {
   ): Promise<Humidity> {
     const location = await this.locationService.getLocationIfExists(locationId);
 
-    const detail = new Humidity();
-    detail.value = createHumidityDto.value;
-    detail.location = location;
+    const humidity = new Humidity();
+    humidity.value = createHumidityDto.value;
+    humidity.location = location;
 
-    return this.humidityRepository.save(detail);
+    return this.humidityRepository.save(humidity);
   }
 
   async last(locationId: string): Promise<Humidity> {

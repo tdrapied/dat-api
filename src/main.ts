@@ -26,6 +26,7 @@ async function bootstrap() {
       .addTag('auth')
       .addTag('users')
       .addTag('locations')
+      .addTag('temperatures')
       .addTag('humidities')
       .build();
     const document = SwaggerModule.createDocument(app, config);
