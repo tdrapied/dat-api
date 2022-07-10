@@ -6,19 +6,21 @@ import { Temperature, TemperatureType } from './entities/temperature.entity';
 import { LocationsModule } from '../locations/locations.module';
 import { Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
+import { Humidity } from '../humidities/entities/humidity.entity';
 
 describe('TemperaturesService', () => {
   let module: TestingModule;
   let temperaturesService: TemperaturesService;
   let temperaturesRepository: Repository<Temperature>;
+  let humiditiesRepository: Repository<Humidity>;
+
+  jest.setTimeout(999999);
 
   beforeAll(async () => {
-    jest.setTimeout(90 * 1000);
-
     module = await Test.createTestingModule({
       imports: [
         AppModule,
-        TypeOrmModule.forFeature([Temperature]),
+        TypeOrmModule.forFeature([Temperature, Humidity]),
         LocationsModule,
       ],
       providers: [TemperaturesService],
@@ -28,9 +30,25 @@ describe('TemperaturesService', () => {
     temperaturesRepository = module.get<Repository<Temperature>>(
       getRepositoryToken(Temperature),
     );
+    humiditiesRepository = module.get<Repository<Humidity>>(
+      getRepositoryToken(Humidity),
+    );
+
+    // Get the first day of the last month
+    const lastMonth = new Date();
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+    lastMonth.setDate(1);
+    lastMonth.setHours(0, 0, 0, 0);
+
+    // Get today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     // Generate fake temperatures
-    await generateAllTemperature();
+    await generateTemperatures(
+      lastMonth,
+      today, // date included
+    );
   });
 
   afterAll(async () => {
@@ -40,55 +58,65 @@ describe('TemperaturesService', () => {
   it('should be defined', () => {
     expect(temperaturesService).toBeDefined();
     expect(temperaturesRepository).toBeDefined();
+    expect(humiditiesRepository).toBeDefined();
   });
 
   /********************************************
    * Other methods
    * ******************************************/
 
-  const generateAllTemperature = async () => {
-    const today = new Date();
-    const lastDayOfMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() + 1,
-      0,
-    );
+  const generateTemperatures = async (
+    startDate: Date,
+    endDate: Date = new Date(),
+  ) => {
+    const currentDate = new Date(startDate);
+    currentDate.setHours(0, 0, 0, 0); // set to midnight
 
-    // TODO: Generate random temperatures to old months
-
-    // Generate daytime temperatures
+    // Generate temperatures
     let lastTemperature = null;
-    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-      const firstDate = new Date(today.getFullYear(), today.getMonth(), i);
+    while (currentDate <= endDate) {
       lastTemperature = await generateDaytimeTemperature(
-        firstDate,
+        currentDate,
         14,
         28,
         lastTemperature,
       );
+
+      // Add 1 day
+      currentDate.setDate(currentDate.getDate() + 1);
     }
   };
 
   const generateDaytimeTemperature = async (
-    firstDate: Date,
+    date: Date,
     minTemperature: number,
     maxTemperature: number,
     lastTemperature: number = null,
   ): Promise<number> => {
     const lastTime = new Date(
-      firstDate.getFullYear(),
-      firstDate.getMonth(),
-      firstDate.getDate(),
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
       23,
       59,
     );
 
     // Get the datetime of the temperature peak
-    const maxPeakDate = getMaxPeakDate(firstDate);
+    const maxPeakDate = getMaxPeakDate(date);
+
+    // Get start datetime of the temperature peak
+    const minStartPeakDate = new Date(maxPeakDate);
+    minStartPeakDate.setHours(minStartPeakDate.getHours() - 1);
+    const startPeakDate = getRandomDate(minStartPeakDate, maxPeakDate, 80);
+
+    // Get end datetime of the temperature peak
+    const maxEndPeakDate = new Date(maxPeakDate);
+    maxEndPeakDate.setHours(maxEndPeakDate.getHours() + 1);
+    const endPeakDate = getRandomDate(maxPeakDate, maxEndPeakDate, 80);
 
     // Get random max, min morning and night temperatures
     const randomMaxTemperature = getRandomTemperature(
-      maxTemperature - 3,
+      maxTemperature - 4,
       maxTemperature,
     );
     const morningTemperature =
@@ -96,7 +124,7 @@ describe('TemperaturesService', () => {
       getRandomTemperature(minTemperature, minTemperature + 3);
     const nightTemperature = getRandomTemperature(
       minTemperature,
-      minTemperature + 3,
+      minTemperature + 4,
     );
 
     // ...
@@ -105,13 +133,14 @@ describe('TemperaturesService', () => {
 
     // All peaks
     const peaks = [
-      ...generatePeaksArray(firstDate, maxPeakDate, morningInterval),
-      maxPeakDate,
-      ...generatePeaksArray(maxPeakDate, lastTime, nightInterval),
+      ...generatePeaksArray(date, startPeakDate, morningInterval),
+      startPeakDate,
+      ...generatePeaksArray(endPeakDate, lastTime, nightInterval),
     ];
 
-    const rows: Temperature[] = [];
-    const currentDate = new Date(firstDate);
+    const temperaturesRow: Temperature[] = [];
+    const humiditiesRow: Humidity[] = [];
+    const currentDate = new Date(date);
     if (!lastTemperature) lastTemperature = morningTemperature;
     while (currentDate.getTime() <= lastTime.getTime()) {
       // If current date is a peak
@@ -119,7 +148,7 @@ describe('TemperaturesService', () => {
         (date) => date.getTime() === currentDate.getTime(),
       );
       if (currentDateIsPeak) {
-        if (currentDate.getTime() < maxPeakDate.getTime()) {
+        if (currentDate.getTime() <= startPeakDate.getTime()) {
           lastTemperature = lastTemperature + 0.5;
         } else {
           lastTemperature = lastTemperature - 0.5;
@@ -127,10 +156,21 @@ describe('TemperaturesService', () => {
       }
 
       // Generate temperature row
-      rows.push({
+      temperaturesRow.push({
         id: randomUUID(),
         value: lastTemperature,
         type: TemperatureType.AIR,
+        location: {
+          id: '6ef36c45-1385-4978-9dd0-4fa7f8a0d551',
+          name: 'Domaine de Lille',
+        },
+        createdAt: new Date(currentDate),
+      });
+
+      // Generate humidity row
+      humiditiesRow.push({
+        id: randomUUID(),
+        value: lastTemperature * 2, // Multiply by 2 the temperature to simulate humidity
         location: {
           id: '6ef36c45-1385-4978-9dd0-4fa7f8a0d551',
           name: 'Domaine de Lille',
@@ -143,7 +183,8 @@ describe('TemperaturesService', () => {
     }
 
     // Save all rows
-    await temperaturesRepository.save(rows);
+    await temperaturesRepository.save(temperaturesRow);
+    await humiditiesRepository.save(humiditiesRow);
 
     // Return last temperature
     return lastTemperature;
@@ -154,13 +195,13 @@ describe('TemperaturesService', () => {
       date.getFullYear(),
       date.getMonth(),
       date.getDate(),
-      12,
+      13, // 13 hours
     );
     const max = new Date(
       date.getFullYear(),
       date.getMonth(),
       date.getDate(),
-      16,
+      16, // 16 hours
     );
     return getRandomDate(min, max);
   };
