@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateHumidityDto } from './dto/create-humidity.dto';
 import { Humidity } from './entities/humidity.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { LocationsService } from '../locations/locations.service';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class HumiditiesService {
     const location = await this.locationService.getLocationIfExists(locationId);
 
     return this.humidityRepository.findOne({
-      where: { location },
+      where: { location, createdAt: LessThanOrEqual(new Date()) },
       order: { createdAt: 'DESC' },
     });
   }
