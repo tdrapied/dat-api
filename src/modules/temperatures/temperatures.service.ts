@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTemperatureDto } from './dto/create-temperature.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LocationsService } from '../locations/locations.service';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { Temperature, TemperatureType } from './entities/temperature.entity';
 
 @Injectable()
@@ -35,7 +35,11 @@ export class TemperaturesService {
     const location = await this.locationService.getLocationIfExists(locationId);
 
     return this.temperatureRepository.findOne({
-      where: { type: TemperatureType.AIR, location },
+      where: {
+        type: TemperatureType.AIR,
+        location,
+        createdAt: LessThanOrEqual(new Date()),
+      },
       order: { createdAt: 'DESC' },
     });
   }
