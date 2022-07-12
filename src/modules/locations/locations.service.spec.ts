@@ -4,6 +4,7 @@ import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { Location } from './entities/location.entity';
 import { AppModule } from '../../app.module';
 import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 
 const location1: Location = {
   id: '6ef36c45-1385-4978-9dd0-4fa7f8a0d551',
@@ -27,7 +28,7 @@ describe('LocationsService', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule, TypeOrmModule.forFeature([Location])],
+      imports: [AppModule, TypeOrmModule.forFeature([Location, User])],
       providers: [LocationsService],
     }).compile();
 
