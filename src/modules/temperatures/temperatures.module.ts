@@ -4,9 +4,14 @@ import { TemperaturesController } from './temperatures.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LocationsModule } from '../locations/locations.module';
 import { Temperature } from './entities/temperature.entity';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Temperature]), LocationsModule],
+  imports: [
+    TypeOrmModule.forFeature([Temperature]),
+    LocationsModule,
+    AuthModule,
+  ],
   controllers: [TemperaturesController],
   providers: [TemperaturesService],
 })

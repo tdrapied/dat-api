@@ -22,7 +22,20 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .setTitle(process.env.npm_package_name)
       .setVersion(process.env.npm_package_version)
-      .addBearerAuth()
+      .addBearerAuth({
+        type: 'http',
+        in: 'header',
+        description: '**Authentication for users**',
+      })
+      .addApiKey(
+        {
+          type: 'apiKey',
+          name: 'x-api-key',
+          in: 'header',
+          description: '**Authentication for applications**',
+        },
+        'x-api-key',
+      )
       .addTag('auth')
       .addTag('users')
       .addTag('locations')

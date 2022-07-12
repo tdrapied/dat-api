@@ -14,6 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiTags,
@@ -32,6 +33,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Request() req, @Body() createUserDto: CreateUserDto): Promise<User> {

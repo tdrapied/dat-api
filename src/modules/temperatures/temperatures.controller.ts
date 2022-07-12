@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { TemperaturesService } from './temperatures.service';
 import { CreateTemperatureDto } from './dto/create-temperature.dto';
@@ -13,10 +14,13 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiSecurity,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Temperature } from './entities/temperature.entity';
 import { Humidity } from '../humidities/entities/humidity.entity';
+import { AppKeyGuard } from '../auth/guards/app-key.guard';
 
 @ApiTags('temperatures')
 @Controller('location/:locationId/temperatures')
@@ -29,6 +33,9 @@ export class TemperaturesController {
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Location not found' })
+  @ApiSecurity('x-api-key')
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AppKeyGuard)
   @Post()
   create(
     @Param('locationId', ParseUUIDPipe) locationId: string,

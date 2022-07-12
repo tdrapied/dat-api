@@ -6,15 +6,22 @@ import * as bcrypt from 'bcrypt';
 import { IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Location } from '../locations/entities/location.entity';
+import { Application } from '../applications/entities/application.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectRepository(Application)
+    private readonly applicationRepository: Repository<Application>,
     private readonly userRepository: UsersRepository,
     @InjectRepository(Location)
     private readonly locationRepository: Repository<Location>,
     private readonly jwtService: JwtService,
   ) {}
+
+  /********************************************
+   * Users
+   * ******************************************/
 
   async validateUserCredentials(
     email: string,
@@ -59,5 +66,22 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  /********************************************
+   * Applications
+   * ******************************************/
+
+  async validateAppKey(key: string): Promise<Application> {
+    if (!key) return null;
+
+    const app = await this.applicationRepository.findOne({
+      where: {
+        key,
+        isActivated: true,
+      },
+    });
+
+    return app;
   }
 }
