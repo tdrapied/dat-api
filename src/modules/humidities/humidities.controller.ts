@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { HumiditiesService } from './humidities.service';
 import { CreateHumidityDto } from './dto/create-humidity.dto';
@@ -13,9 +14,12 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiSecurity,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Humidity } from './entities/humidity.entity';
+import { AppKeyGuard } from '../auth/guards/app-key.guard';
 
 @ApiTags('humidities')
 @Controller('location/:locationId/humidities')
@@ -25,6 +29,9 @@ export class HumiditiesController {
   @ApiOperation({ summary: 'Create a new humidity' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiNotFoundResponse({ description: 'Location not found' })
+  @ApiSecurity('x-api-key')
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseGuards(AppKeyGuard)
   @Post()
   create(
     @Param('locationId', ParseUUIDPipe) locationId: string,

@@ -23,6 +23,14 @@ async function bootstrap() {
       .setTitle(process.env.npm_package_name)
       .setVersion(process.env.npm_package_version)
       .addBearerAuth()
+      .addApiKey(
+        {
+          type: 'apiKey',
+          name: 'x-api-key',
+          in: 'header',
+        },
+        'x-api-key',
+      )
       .addTag('auth')
       .addTag('users')
       .addTag('locations')
