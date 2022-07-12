@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -29,9 +30,22 @@ export class UsersService {
     private readonly mailerUtil: MailerUtil,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(currentUser: User, createUserDto: CreateUserDto): Promise<User> {
+    if (currentUser.role === UserRole.USER) {
+      throw new ForbiddenException('You are not allowed to create users');
+    }
+
     if (createUserDto.role === UserRole.SUPER_ADMIN) {
       throw new BadRequestException('SUPER_ADMIN role is not allowed');
+    }
+
+    if (
+      currentUser.role === UserRole.ADMIN &&
+      createUserDto.role === UserRole.ADMIN
+    ) {
+      throw new BadRequestException(
+        'You are not allowed to create ADMIN users',
+      );
     }
 
     // Verify if the user already exists
@@ -60,7 +74,7 @@ export class UsersService {
       }
     }
 
-    const user = new User(
+    const newUser = new User(
       await this.userRepository.save({
         ...createUserDto,
         locations,
@@ -71,13 +85,13 @@ export class UsersService {
     const validationCode = await this.validationCodeRepository.save({
       code: randomUUID(),
       type: ValidationCodeType.USER_VERIFICATION,
-      user,
+      user: newUser,
     });
 
     // Send an activation email
-    await this.mailerUtil.sendActivationEmail(user, validationCode.code);
+    await this.mailerUtil.sendActivationEmail(newUser, validationCode.code);
 
-    return user;
+    return newUser;
   }
 
   async validate(validateUserDto: ValidateUserDto): Promise<void> {
@@ -103,16 +117,22 @@ export class UsersService {
     await this.validationCodeRepository.delete(validationCode.id);
   }
 
-  findAll(): Promise<User[]> {
+  findAll(currentUser: User): Promise<User[]> {
     // TODO: Add pagination
     return this.userRepository.find({
+      where: {
+        locations: currentUser.locations,
+      },
       relations: ['locations'],
     });
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(currentUser: User, id: string): Promise<User> {
     const user = await this.userRepository.findOne({
-      where: { id },
+      where: {
+        id,
+        locations: currentUser.locations,
+      },
       relations: ['locations'],
     });
     if (!user) {

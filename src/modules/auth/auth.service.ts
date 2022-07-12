@@ -12,7 +12,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUserCredentials(email: string, password: string): Promise<User> {
+  async validateUserCredentials(
+    email: string,
+    password: string,
+  ): Promise<User> {
     const user = await this.userRepository.findOneBy({
       email,
       password: Not(IsNull()),
@@ -25,16 +28,22 @@ export class AuthService {
       return null;
     }
 
+    return user;
+  }
+
+  async validateUserPayload(payload: any): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: payload.sub,
+      },
+      relations: ['locations'],
+    });
+    if (!user) return null;
+
     // Clear user password
     user.password = null;
 
     return user;
-  }
-
-  validateUserPayload(payload: any): Promise<User> {
-    return this.userRepository.findOneBy({
-      id: payload.sub,
-    });
   }
 
   async login(user: User): Promise<{ access_token: string }> {
