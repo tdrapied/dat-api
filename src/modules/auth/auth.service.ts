@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { IsNull, Not } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Location } from '../locations/entities/location.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepository: UsersRepository,
-    private jwtService: JwtService,
+    @InjectRepository(Location)
+    private readonly locationRepository: Repository<Location>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async validateUserCredentials(
@@ -39,6 +43,10 @@ export class AuthService {
       relations: ['locations'],
     });
     if (!user) return null;
+
+    if (user.role === UserRole.SUPER_ADMIN) {
+      user.locations = await this.locationRepository.find();
+    }
 
     // Clear user password
     user.password = null;

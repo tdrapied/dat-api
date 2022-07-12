@@ -6,10 +6,13 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Location } from '../locations/entities/location.entity';
 
 @Module({
   imports: [
     UsersModule,
+    TypeOrmModule.forFeature([Location]),
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
