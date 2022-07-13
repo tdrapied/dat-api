@@ -11,8 +11,8 @@ export class AppKeyGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { headers } = context.switchToHttp().getRequest();
-    const key = headers['x-api-key'];
+    const { query } = context.switchToHttp().getRequest();
+    const key = query['key'];
     const app = await this.authService.validateAppKey(key);
     if (!app) {
       throw new UnauthorizedException();

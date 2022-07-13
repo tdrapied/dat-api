@@ -30,11 +30,11 @@ async function bootstrap() {
       .addApiKey(
         {
           type: 'apiKey',
-          name: 'x-api-key',
-          in: 'header',
+          name: 'key',
+          in: 'query',
           description: '**Authentication for applications**',
         },
-        'x-api-key',
+        'apiKey',
       )
       .addTag('auth')
       .addTag('users')
@@ -43,6 +43,7 @@ async function bootstrap() {
       .addTag('humidities')
       .addTag('applications-temperatures')
       .addTag('applications-humidities')
+      .addTag('applications-decisions')
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/', app, document);
