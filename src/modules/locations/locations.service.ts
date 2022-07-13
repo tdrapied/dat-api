@@ -19,7 +19,7 @@ export class LocationsService {
 
   /********************************************
    * Other methods
-   * ******************************************/
+   ********************************************/
 
   async getLocationIfExists(id: string): Promise<Location> {
     const location = await this.locationRepository.findOne({

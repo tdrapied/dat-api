@@ -70,7 +70,7 @@ export class AuthService {
 
   /********************************************
    * Applications
-   * ******************************************/
+   ********************************************/
 
   async validateAppKey(key: string): Promise<Application> {
     if (!key) return null;
