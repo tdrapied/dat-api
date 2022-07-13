@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { TemperaturesService } from './temperatures.service';
 import { CreateTemperatureDto } from './dto/create-temperature.dto';
 import {
@@ -21,22 +22,44 @@ import {
 import { Temperature } from './entities/temperature.entity';
 import { Humidity } from '../humidities/entities/humidity.entity';
 import { AppKeyGuard } from '../auth/guards/app-key.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-@ApiTags('temperatures')
-@Controller('location/:locationId/temperatures')
+@Controller()
 export class TemperaturesController {
   constructor(private readonly temperaturesService: TemperaturesService) {}
 
+  @ApiTags('temperatures')
+  @ApiOperation({ summary: 'Get last air temperature' })
+  @ApiOkResponse({
+    description: 'Get last air temperature (or `null` if no air temperatures)',
+    type: Humidity,
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Location not found' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('locations/:locationId/temperatures/air/last')
+  last(
+    @Param('locationId', ParseUUIDPipe) locationId: string,
+  ): Promise<Humidity> {
+    return this.temperaturesService.lastAir(locationId);
+  }
+
+  /********************************************
+   * Applications
+   ********************************************/
+
+  @ApiTags('applications-temperatures')
   @ApiOperation({
-    summary: 'Create a new temperature',
+    summary: 'Create a new temperature with an application',
     description: 'Note: `SOIL` type is not supported currently',
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Location not found' })
   @ApiSecurity('x-api-key')
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AppKeyGuard)
-  @Post()
+  @Post('applications/locations/:locationId/temperatures')
   create(
     @Param('locationId', ParseUUIDPipe) locationId: string,
     @Body() createTemperatureDto: CreateTemperatureDto,
@@ -44,14 +67,18 @@ export class TemperaturesController {
     return this.temperaturesService.create(locationId, createTemperatureDto);
   }
 
-  @ApiOperation({ summary: 'Get last air temperature' })
+  @ApiTags('applications-temperatures')
+  @ApiOperation({ summary: 'Get last air temperature with an application' })
   @ApiOkResponse({
     description: 'Get last air temperature (or `null` if no air temperatures)',
     type: Humidity,
   })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Location not found' })
-  @Get('air/last')
-  last(
+  @ApiSecurity('x-api-key')
+  @UseGuards(AppKeyGuard)
+  @Get('applications/locations/:locationId/temperatures/air/last')
+  appLast(
     @Param('locationId', ParseUUIDPipe) locationId: string,
   ): Promise<Humidity> {
     return this.temperaturesService.lastAir(locationId);
