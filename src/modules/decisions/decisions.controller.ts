@@ -35,7 +35,7 @@ export class DecisionsController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Location not found' })
-  @ApiSecurity('x-api-key')
+  @ApiSecurity('apiKey')
   @UseGuards(AppKeyGuard)
   @Post('applications/locations/:locationId/decisions')
   create(

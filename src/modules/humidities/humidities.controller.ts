@@ -53,7 +53,7 @@ export class HumiditiesController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Location not found' })
-  @ApiSecurity('x-api-key')
+  @ApiSecurity('apiKey')
   @UseGuards(AppKeyGuard)
   @Post('applications/locations/:locationId/humidities')
   create(
@@ -71,7 +71,7 @@ export class HumiditiesController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Location not found' })
-  @ApiSecurity('x-api-key')
+  @ApiSecurity('apiKey')
   @UseGuards(AppKeyGuard)
   @Get('applications/locations/:locationId/humidities/last')
   appLast(

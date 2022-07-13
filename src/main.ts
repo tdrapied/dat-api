@@ -30,11 +30,11 @@ async function bootstrap() {
       .addApiKey(
         {
           type: 'apiKey',
-          name: 'x-api-key',
-          in: 'header',
+          name: 'key',
+          in: 'query',
           description: '**Authentication for applications**',
         },
-        'x-api-key',
+        'apiKey',
       )
       .addTag('auth')
       .addTag('users')
