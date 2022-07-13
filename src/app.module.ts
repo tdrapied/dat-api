@@ -9,6 +9,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfig } from '../core/mailer/mailer.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { TemperaturesModule } from './modules/temperatures/temperatures.module';
+import { DecisionsModule } from './modules/decisions/decisions.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TemperaturesModule } from './modules/temperatures/temperatures.module';
     HumiditiesModule,
     LocationsModule,
     AuthModule,
+    DecisionsModule,
   ],
 })
 export class AppModule {}
