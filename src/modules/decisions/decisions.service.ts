@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateDecisionDto } from './dto/create-decision.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { LocationsService } from '../locations/locations.service';
-import { Decision } from './entities/decision.entity';
+import { Decision, DecisionType } from './entities/decision.entity';
 
 @Injectable()
 export class DecisionsService {
@@ -25,5 +25,22 @@ export class DecisionsService {
     decision.location = location;
 
     return this.decisionRepository.save(decision);
+  }
+
+  async last(locationId: string, decisionType: string): Promise<Decision> {
+    if (!DecisionType[decisionType]) {
+      throw new BadRequestException(`Invalid decision type`);
+    }
+
+    const location = await this.locationService.getLocationIfExists(locationId);
+
+    return this.decisionRepository.findOne({
+      where: {
+        location,
+        type: DecisionType[decisionType],
+        createdAt: LessThanOrEqual(new Date()),
+      },
+      order: { createdAt: 'DESC' },
+    });
   }
 }

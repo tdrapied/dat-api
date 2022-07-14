@@ -41,6 +41,7 @@ async function bootstrap() {
       .addTag('locations')
       .addTag('temperatures')
       .addTag('humidities')
+      .addTag('decisions')
       .addTag('applications-temperatures')
       .addTag('applications-humidities')
       .addTag('applications-decisions')

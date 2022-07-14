@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { HumiditiesService } from './humidities.service';
 import { CreateHumidityDto } from './dto/create-humidity.dto';
@@ -22,10 +23,36 @@ import {
 import { Humidity } from './entities/humidity.entity';
 import { AppKeyGuard } from '../auth/guards/app-key.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SearchHumidityDto } from './dto/search-humidity.dto';
+import { StatHumidityModel } from './models/stat-humidity.model';
 
 @Controller()
 export class HumiditiesController {
   constructor(private humiditiesService: HumiditiesService) {}
+
+  @ApiTags('humidities')
+  @ApiOperation({
+    summary: 'List all humidities',
+    description:
+      'Obtain humidities statistics including min, max and average.\n\n' +
+      '**The granularity of the data is automatic (cannot be adjusted).**\n\n' +
+      '- less than 1 day = 5 minute interval data\n' +
+      '- 1 - 7 days (1 week) = hourly data\n' +
+      '- 8 - 90 days (~3 months) = daily data\n' +
+      '- 91 - 365 days (~ 1 year) = weekly data\n' +
+      '- more than 365 days = monthly data',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiNotFoundResponse({ description: 'Location not found' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('locations/:locationId/humidities')
+  findAll(
+    @Param('locationId', ParseUUIDPipe) locationId: string,
+    @Query() searchHumidityDto: SearchHumidityDto,
+  ): Promise<StatHumidityModel[]> {
+    return this.humiditiesService.findAll(locationId, searchHumidityDto);
+  }
 
   @ApiTags('humidities')
   @ApiOperation({ summary: 'Get last humidity' })
