@@ -45,8 +45,6 @@ export class DecisionsController {
     return this.decisionsService.last(locationId, decisionType);
   }
 
-  // TODO: Get last decision by location and type
-
   /********************************************
    * Applications
    ********************************************/
