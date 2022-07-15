@@ -32,3 +32,7 @@ API: http://localhost:3000
 # Run the test with fake data
 npm run test
 ```
+
+## More information
+
+Follow this [link](docs/doc.md)
