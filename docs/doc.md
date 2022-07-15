@@ -1,21 +1,25 @@
-# Doc
+# Documentation : more information
 
 ## Database schema
 
-![](/database-schema.png)
+![](./database-schema.png)
 
-<center>
-PostgreSQL database schema
-</center>
+<p align="center">
+  PostgreSQL database schema
+</p>
+
+<br/>
 
 ## Applications
 
 Applications are the different external applications that can call the API.
 In order for an application to call the API, it must be manually added to the database.
 
-> Note: When creating an application, fill in a secure key that will be used for authentication.
+> **Note**: When creating an application, fill in a secure key that will be used for authentication.
 
-> Note: Don't forget to add roles in the `application_role` table for each application to access the different routes.
+> **Note**: Don't forget to add roles in the `application_role` table for each application to access the different routes.
+
+<br/>
 
 ## Fixtures
 
@@ -49,19 +53,18 @@ It is based on the following principles:
 
 #### Graphic example with peak points
 
-![](/graphic-with-points.png)
+![](./graphic-with-points.png)
 
-<center>
+<p align="center">
 Temperature graph with peak points for one day
-</center>
+</p>
 
 <br/>
 
 #### Final graphic example
 
-![](/graphic.png)
+![](./graphic.png)
 
-<center>
+<p align="center">
 Graph of temperature and humidity for one day
-</center>
-
+</p>
