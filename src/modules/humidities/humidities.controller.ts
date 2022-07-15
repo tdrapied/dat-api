@@ -42,6 +42,7 @@ export class HumiditiesController {
       '- 91 - 365 days (~ 1 year) = weekly data\n' +
       '- more than 365 days = monthly data',
   })
+  @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Location not found' })
   @ApiBearerAuth()
